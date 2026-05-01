@@ -332,12 +332,38 @@ function appendMessageEl(role, content) {
 }
 
 function formatContent(t) {
-  let h = t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+  /* Step 1: extract triple-backtick code blocks before any other processing
+     so their contents are never touched by inline replacements.
+     Supports optional language hint: ```javascript ... ``` */
+  const codeBlocks = [];
+  t = t.replace(/```([a-z]*)\n?([\s\S]*?)```/g, (_, lang, code) => {
+    const idx = codeBlocks.length;
+    codeBlocks.push({ lang, code });
+    return `\x00CODE${idx}\x00`;
+  });
+
+  /* Step 2: escape HTML in the remaining text */
+  let h = t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+  /* Step 3: inline markdown */
+  h = h
     .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
     .replace(/\*(.+?)\*/g,'<em>$1</em>')
-    .replace(/`(.+?)`/g,'<code>$1</code>');
+    .replace(/#+\s+(.+)/g,'<strong>$1</strong>')  /* treat ## headings as bold */
+    .replace(/`([^`]+)`/g,'<code style="white-space:pre;">$1</code>');
+
+  /* Step 4: line-by-line pass for lists and paragraphs */
   const lines = h.split('\n'), out = []; let inList = false;
   for (const line of lines) {
+    /* restore code blocks inline if placeholder lands on its own line */
+    if (/^\x00CODE\d+\x00$/.test(line.trim())) {
+      if (inList) { out.push('</ul>'); inList = false; }
+      const idx = parseInt(line.trim().replace(/\x00CODE(\d+)\x00/, '$1'));
+      const { lang, code } = codeBlocks[idx];
+      const escaped = code.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      out.push(`<pre style="font-family:var(--mono);font-size:0.78rem;line-height:1.6;background:var(--stone-cool);padding:1rem 1.25rem;overflow-x:auto;margin:0.75rem 0;white-space:pre;"><code>${escaped}</code></pre>`);
+      continue;
+    }
     if (line.startsWith('- ') || line.startsWith('• ')) {
       if (!inList) { out.push('<ul>'); inList = true; }
       out.push('<li>' + line.slice(2) + '</li>');
@@ -347,7 +373,15 @@ function formatContent(t) {
     }
   }
   if (inList) out.push('</ul>');
-  return out.join('');
+
+  /* Step 5: restore any code blocks that weren't on their own line */
+  let result = out.join('');
+  result = result.replace(/\x00CODE(\d+)\x00/g, (_, idx) => {
+    const { code } = codeBlocks[parseInt(idx)];
+    const escaped = code.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    return `<pre style="font-family:var(--mono);font-size:0.78rem;line-height:1.6;background:var(--stone-cool);padding:1rem 1.25rem;overflow-x:auto;margin:0.75rem 0;white-space:pre;"><code>${escaped}</code></pre>`;
+  });
+  return result;
 }
 
 function showThinking() {
@@ -383,7 +417,7 @@ RULES — follow these without exception:
 
 2. ZERO-AUTH APIS FIRST. If a free API exists that requires no signup and no key, recommend it over one that requires registration. Example: Open-Meteo over OpenWeatherMap for weather data.
 
-3. CORRECT SYNTAX ALWAYS. When writing cron expressions, use 5-field format: minute hour day month weekday (e.g. 0 8 * * * for 8am daily). When writing code snippets, verify they are syntactically valid before including them. Never use malformed template literals or broken backtick nesting.
+3. CORRECT SYNTAX ALWAYS. When writing cron expressions, use 5-field format: minute hour day month weekday — always wrap them in backticks so they render as code (e.g. \`0 8 * * *\` for 8am daily). When writing code snippets of more than one line, always use triple-backtick fences with a language hint (e.g. \`\`\`javascript). Verify all code is syntactically valid before including it. Never use malformed template literals.
 
 4. STEP ORDER. Always present steps in the exact order the user will perform them in the UI. Number every step.
 
