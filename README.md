@@ -13,13 +13,19 @@ Built with the Anthropic Claude API and web search, so guidance is current rathe
 - Select a platform: **n8n**, **Power Automate**, or **Copilot Studio**
 - Describe your automation goal in plain language
 - Get opinionated, step-by-step guidance — no options menus, no "it depends"
-- Sessions persist in localStorage and can be exported/imported as JSON
+- Sessions persist in localStorage, named by platform and timestamp
+- Export sessions as JSON (backup/restore) or TXT (readable conversation)
+
+---
+
+## Requirements
+
+- [Node.js](https://nodejs.org/) v18 or later
+- An [Anthropic API key](https://console.anthropic.com/)
 
 ---
 
 ## Setup
-
-You need [Node.js](https://nodejs.org/) installed (v18 or later).
 
 **1. Clone the repo**
 ```bash
@@ -33,27 +39,29 @@ cd backend
 npm install
 ```
 
-**3. Set your Anthropic API key**
+**3. Create your start script**
 
-PowerShell:
-```powershell
-$env:ANTHROPIC_API_KEY="sk-ant-..."
+Copy `start.example.bat` to `start.bat` in the root folder:
+```
+autowolf\
+  start.example.bat   ← template, safe to commit
+  start.bat           ← your copy, never committed
 ```
 
-Bash/Mac:
-```bash
-export ANTHROPIC_API_KEY="sk-ant-..."
+Open `start.bat` in Notepad and replace the placeholder with your Anthropic API key:
+```bat
+set ANTHROPIC_API_KEY=sk-ant-your-actual-key-here
 ```
 
-**4. Start the proxy**
-```bash
-npm start
-# Proxy runs on http://localhost:3001
-```
+Save and close.
 
-**5. Open the frontend**
+**4. Run Autowolf**
 
-Open `frontend/automation-guide.html` directly in your browser. No build step needed.
+Double-click `start.bat`. It will:
+- Open the Node proxy in its own terminal window (port 3001)
+- Launch the frontend in Chrome automatically
+
+To shut down, close the proxy terminal window.
 
 ---
 
@@ -62,11 +70,12 @@ Open `frontend/automation-guide.html` directly in your browser. No build step ne
 ```
 autowolf/
   backend/
-    index.js          Express proxy — keeps your API key off the browser
+    index.js              Express proxy — keeps your API key server-side
     package.json
   frontend/
-    automation-guide.html   Full app — single file, no framework
+    automation-guide.html Full app — single file, no framework, no build step
   .gitignore
+  start.example.bat       Startup script template — edit and save as start.bat
   README.md
 ```
 
@@ -74,13 +83,19 @@ autowolf/
 
 ## Why a proxy?
 
-Browsers block direct calls to the Anthropic API (CORS). The local Express proxy forwards your requests server-side, keeping your API key out of the browser entirely. Your key is set as an environment variable — it never touches the frontend.
+Browsers block direct calls to the Anthropic API (CORS). The local Express proxy forwards your requests server-side, keeping your API key out of the browser entirely. Your key is set in `start.bat` as an environment variable — it never touches the frontend or the repo.
+
+---
+
+## Security note
+
+`start.bat` contains your API key in plain text and is excluded from the repo via `.gitignore`. Never commit it. If you accidentally push it, rotate your key immediately at [console.anthropic.com](https://console.anthropic.com/).
 
 ---
 
 ## Sessions
 
-Sessions are stored in your browser's localStorage and survive page refreshes. Use **Export** to save a JSON snapshot and **Import** to restore it on another machine.
+Sessions are stored in your browser's localStorage and survive page refreshes. Each session is named by platform and timestamp (e.g. `n8n · 20260430_1437`). Use **Export TXT** to save a readable conversation and **Export JSON** to back up all sessions for import on another machine.
 
 ---
 
