@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Automation Guide · Wolflow Suite</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Martian+Mono:wght@300;400&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --ink:#181b14;--ink-mid:#3c3325;--ink-faint:#697060;--ink-dimmer:#a8a090;
+  --stone-warm:#edeade;--stone-mid:#d0ccc0;--stone-cool:#e8e6e0;
+  --indigo:#3a4a7c;--indigo-mid:#5a6fa0;
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --mono:'Martian Mono','Courier New',monospace;
+}
+html,body{height:100%;font-family:var(--serif);background:var(--stone-warm);color:var(--ink);-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:500;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23g)' opacity='1'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23g)' opacity='1'/%3E%3C/svg%3E");
+  background-size:300px 300px,200px 200px;
+  mix-blend-mode:multiply;opacity:0.22;
+}
+
+@keyframes land{
+  0%{opacity:0;transform:translateY(28px) skewY(0.4deg);}
+  60%{opacity:1;transform:translateY(-4px) skewY(-0.1deg);}
+  100%{opacity:1;transform:translateY(0) skewY(0);}
+}
+@keyframes msgIn{0%{opacity:0;transform:translateY(10px);}100%{opacity:1;transform:translateY(0);}}
+@keyframes pulse{0%,100%{opacity:0.3;}50%{opacity:1;}}
+
+.app{display:flex;flex-direction:column;height:100vh;max-width:900px;margin:0 auto;}
+
+nav{display:flex;justify-content:space-between;align-items:baseline;padding:1.25rem 3.5rem 1rem;border-bottom:0.5px solid var(--stone-mid);position:relative;z-index:10;flex-shrink:0;}
+.nav-mark{font-family:var(--serif);font-weight:300;font-size:0.85rem;letter-spacing:0.06em;color:var(--ink-mid);font-style:italic;}
+.nav-right{font-family:var(--mono);font-size:0.55rem;letter-spacing:0.12em;color:var(--ink-dimmer);text-transform:uppercase;}
+
+.platform-bar{display:flex;align-items:center;border-bottom:0.5px solid var(--stone-mid);flex-shrink:0;position:relative;z-index:10;}
+.platform-label{font-family:var(--mono);font-size:0.5rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--ink-faint);padding:0.65rem 1.5rem 0.65rem 3.5rem;border-right:0.5px solid var(--stone-mid);white-space:nowrap;}
+.platform-options{display:flex;flex:1;}
+.platform-btn{font-family:var(--mono);font-size:0.5rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-faint);background:none;border:none;border-right:0.5px solid var(--stone-mid);padding:0.65rem 1.25rem;cursor:pointer;transition:color 0.2s,background 0.2s;white-space:nowrap;}
+.platform-btn:hover{color:var(--ink-mid);background:var(--stone-cool);}
+.platform-btn.active{color:var(--indigo);background:var(--stone-cool);}
+.platform-btn.active::before{content:'· ';}
+
+.sessions-bar{display:flex;align-items:center;gap:0.75rem;padding:0.5rem 3.5rem;border-bottom:0.5px solid var(--stone-mid);flex-shrink:0;position:relative;z-index:10;overflow-x:auto;}
+.sessions-bar::-webkit-scrollbar{height:2px;}
+.sessions-bar::-webkit-scrollbar-thumb{background:var(--stone-mid);}
+.sessions-label{font-family:var(--mono);font-size:0.48rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink-faint);white-space:nowrap;}
+#session-pills{display:flex;gap:0.5rem;flex-shrink:0;}
+.session-pill{font-family:var(--mono);font-size:0.48rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-mid);background:var(--stone-cool);border:0.5px solid var(--stone-mid);padding:0.2rem 0.6rem;cursor:pointer;transition:all 0.15s;white-space:nowrap;flex-shrink:0;}
+.session-pill:hover{color:var(--indigo);border-color:var(--indigo-mid);}
+.session-pill.active-session{color:var(--indigo);border-color:var(--indigo);}
+.sessions-actions{display:flex;gap:0.5rem;margin-left:auto;flex-shrink:0;}
+.action-btn{font-family:var(--mono);font-size:0.45rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-faint);background:none;border:0.5px solid var(--stone-mid);padding:0.2rem 0.5rem;cursor:pointer;transition:all 0.15s;white-space:nowrap;}
+.action-btn:hover{color:var(--ink-mid);border-color:var(--ink-dimmer);}
+
+.chat-area{flex:1;overflow-y:auto;padding:2rem 3.5rem;display:flex;flex-direction:column;}
+.chat-area::-webkit-scrollbar{width:3px;}
+.chat-area::-webkit-scrollbar-thumb{background:var(--stone-mid);}
+
+.msg{margin-bottom:2rem;animation:msgIn 0.4s cubic-bezier(0.22,1.2,0.36,1) both;}
+.msg-meta{font-family:var(--mono);font-size:0.48rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-dimmer);margin-bottom:0.5rem;}
+.msg-meta.user-meta{text-align:right;color:var(--indigo-mid);}
+.msg-body{font-family:var(--serif);font-weight:300;font-size:1rem;line-height:1.8;color:var(--ink-mid);}
+.msg-body.user-body{text-align:right;color:var(--ink);font-style:italic;}
+.msg-body.assistant-body{border-left:1.5px solid var(--stone-mid);padding-left:1.5rem;}
+.msg-body strong{font-weight:400;color:var(--ink);}
+.msg-body em{color:var(--indigo);font-style:italic;}
+.msg-body p+p{margin-top:0.75rem;}
+.msg-body ul{margin:0.5rem 0 0.5rem 1rem;list-style:none;}
+.msg-body ul li::before{content:'— ';color:var(--ink-faint);}
+.msg-body ul li{margin-bottom:0.25rem;}
+.msg-body code{font-family:var(--mono);font-size:0.8em;background:var(--stone-cool);padding:0.1em 0.3em;}
+
+.thinking{display:flex;align-items:center;gap:5px;padding:0 0 0 1.5rem;margin-bottom:1rem;}
+.thinking-dot{width:3px;height:3px;border-radius:50%;background:var(--indigo-mid);animation:pulse 1.2s ease-in-out infinite;}
+.thinking-dot:nth-child(2){animation-delay:0.2s;}
+.thinking-dot:nth-child(3){animation-delay:0.4s;}
+
+.input-area{border-top:0.5px solid var(--stone-mid);padding:1.25rem 3.5rem;flex-shrink:0;position:relative;z-index:10;}
+.input-row{display:flex;gap:1rem;align-items:flex-end;}
+textarea{flex:1;font-family:var(--serif);font-weight:300;font-size:1rem;line-height:1.7;color:var(--ink);background:transparent;border:none;border-bottom:0.5px solid var(--stone-mid);padding:0.5rem 0;resize:none;outline:none;min-height:2.5rem;max-height:8rem;}
+textarea::placeholder{color:var(--ink-dimmer);font-style:italic;}
+textarea:focus{border-bottom-color:var(--indigo-mid);}
+.send-btn{font-family:var(--mono);font-size:0.5rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--indigo);background:none;border:0.5px solid var(--indigo-mid);padding:0.5rem 1rem;cursor:pointer;transition:all 0.15s;flex-shrink:0;align-self:flex-end;margin-bottom:0.35rem;}
+.send-btn:hover{background:var(--indigo);color:var(--stone-warm);}
+.send-btn:disabled{color:var(--ink-dimmer);border-color:var(--stone-mid);cursor:default;background:none;}
+.input-hint{font-family:var(--mono);font-size:0.44rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-dimmer);margin-top:0.5rem;}
+
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:3rem;text-align:center;}
+.empty-kicker{font-family:var(--mono);font-size:0.52rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--indigo-mid);margin-bottom:1.5rem;}
+.empty-head{font-family:var(--serif);font-weight:300;font-size:2rem;line-height:1.15;color:var(--ink);margin-bottom:1rem;letter-spacing:-0.01em;}
+.empty-head em{font-style:italic;color:var(--indigo);}
+.empty-sub{font-family:var(--serif);font-weight:300;font-size:0.95rem;line-height:1.7;color:var(--ink-faint);max-width:38ch;}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <nav>
+    <span class="nav-mark">Automation Guide</span>
+    <span class="nav-right" id="nav-platform">No platform selected</span>
+  </nav>
+
+  <div class="platform-bar">
+    <span class="platform-label">Platform</span>
+    <div class="platform-options">
+      <button class="platform-btn" data-platform="n8n" onclick="selectPlatform('n8n')">n8n</button>
+      <button class="platform-btn" data-platform="Power Automate" onclick="selectPlatform('Power Automate')">Power Automate</button>
+      <button class="platform-btn" data-platform="Copilot Studio" onclick="selectPlatform('Copilot Studio')">Copilot Studio</button>
+    </div>
+  </div>
+
+  <div class="sessions-bar">
+    <span class="sessions-label">Sessions</span>
+    <div id="session-pills"></div>
+    <div class="sessions-actions">
+      <button class="action-btn" onclick="newSession()">+ New</button>
+      <button class="action-btn" onclick="exportSessions()">Export</button>
+      <label class="action-btn" style="cursor:pointer;">
+        Import
+        <input type="file" accept=".json" style="display:none;" onchange="importSessions(event)"/>
+      </label>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+    <div id="chat-area" class="chat-area"></div>
+    <div class="input-area">
+      <div class="input-row">
+        <textarea id="user-input" rows="1"
+          placeholder="Describe what you want to build or automate…"
+          onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+        <button class="send-btn" id="send-btn" onclick="sendMessage()">Send →</button>
+      </div>
+      <div class="input-hint" id="input-hint">Select a platform and start a session to begin</div>
+    </div>
+  </div>
+
+</div>
+<script>
+const PROXY_URL = 'http://localhost:3001/api/chat';
+const STORAGE_KEY = 'ag_sessions_v1';
+const ACTIVE_KEY  = 'ag_active_v1';
+const PLAT_KEY    = 'ag_platform_v1';
+
+let sessions = {};
+let activeSessionId = null;
+let currentPlatform = null;
+let isLoading = false;
+
+function genId() {
+  return 'sess_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+}
+
+function loadState() {
+  try { sessions = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch(e) { sessions = {}; }
+  try { activeSessionId = localStorage.getItem(ACTIVE_KEY); } catch(e) {}
+  try { const p = localStorage.getItem(PLAT_KEY); if (p) selectPlatform(p, false); } catch(e) {}
+  renderSessionPills();
+  if (activeSessionId && sessions[activeSessionId]) renderSession(activeSessionId);
+  else renderEmpty();
+}
+
+function saveState() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions)); } catch(e) {}
+  try { localStorage.setItem(ACTIVE_KEY, activeSessionId || ''); } catch(e) {}
+  try { localStorage.setItem(PLAT_KEY, currentPlatform || ''); } catch(e) {}
+}
+
+function selectPlatform(p, save = true) {
+  currentPlatform = p;
+  document.querySelectorAll('.platform-btn').forEach(b => b.classList.toggle('active', b.dataset.platform === p));
+  document.getElementById('nav-platform').textContent = p;
+  updateHint();
+  if (save) saveState();
+}
+
+function updateHint() {
+  const hint = document.getElementById('input-hint');
+  if (!currentPlatform) hint.textContent = 'Select a platform above';
+  else if (!activeSessionId) hint.textContent = 'Start a new session to begin';
+  else hint.textContent = 'Describe what you want to build in ' + currentPlatform;
+}
+
+function newSession() {
+  if (!currentPlatform) { alert('Select a platform first.'); return; }
+  const id = genId();
+  const num = Object.keys(sessions).length + 1;
+  sessions[id] = { id, title: 'Session ' + num, platform: currentPlatform, messages: [], created: Date.now() };
+  activeSessionId = id;
+  saveState();
+  renderSessionPills();
+  renderSession(id);
+  updateHint();
+}
+
+function renderSessionPills() {
+  const container = document.getElementById('session-pills');
+  const ids = Object.keys(sessions).sort((a, b) => (sessions[a].created || 0) - (sessions[b].created || 0));
+  if (!ids.length) {
+    container.innerHTML = '<span style="font-family:var(--mono);font-size:0.45rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-dimmer);">No sessions yet</span>';
+    return;
+  }
+  container.innerHTML = ids.map(id => {
+    const s = sessions[id];
+    return `<button class="session-pill${id === activeSessionId ? ' active-session' : ''}" onclick="switchSession('${id}')" title="${s.platform}">${s.title}</button>`;
+  }).join('');
+}
+
+function switchSession(id) {
+  activeSessionId = id;
+  const s = sessions[id];
+  if (s.platform && s.platform !== currentPlatform) selectPlatform(s.platform, false);
+  saveState();
+  renderSessionPills();
+  renderSession(id);
+  updateHint();
+}
+
+function renderSession(id) {
+  const s = sessions[id];
+  const ca = document.getElementById('chat-area');
+  if (!s || !s.messages.length) {
+    ca.innerHTML = `<div class="empty-state">
+      <div class="empty-kicker">${s ? s.platform : 'Automation Guide'}</div>
+      <div class="empty-head">What do you want<br>to <em>build?</em></div>
+      <div class="empty-sub">Describe your goal in plain language. I'll tell you exactly which nodes, connectors, and auth methods to use — and walk you through each step.</div>
+    </div>`;
+    return;
+  }
+  ca.innerHTML = '';
+  s.messages.forEach(m => appendMessageEl(m.role, m.content));
+  ca.scrollTop = ca.scrollHeight;
+}
+
+function renderEmpty() {
+  document.getElementById('chat-area').innerHTML = `<div class="empty-state">
+    <div class="empty-kicker">Automation Guide · Wolflow Suite</div>
+    <div class="empty-head">Stop <em>figuring it out.</em><br>Start building.</div>
+    <div class="empty-sub">Select a platform, start a session, and describe what you want to automate. The proxy handles your API key — never touches the browser.</div>
+  </div>`;
+}
+
+function appendMessageEl(role, content) {
+  const ca = document.getElementById('chat-area');
+  const empty = ca.querySelector('.empty-state');
+  if (empty) empty.remove();
+  const div = document.createElement('div');
+  div.className = 'msg';
+  const meta = document.createElement('div');
+  meta.className = 'msg-meta' + (role === 'user' ? ' user-meta' : '');
+  meta.textContent = role === 'user' ? 'You' : (currentPlatform || 'Guide') + ' Guide';
+  div.appendChild(meta);
+  const body = document.createElement('div');
+  body.className = 'msg-body ' + (role === 'user' ? 'user-body' : 'assistant-body');
+  body.innerHTML = formatContent(content);
+  div.appendChild(body);
+  ca.appendChild(div);
+}
+
+function formatContent(t) {
+  let h = t
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g,'<em>$1</em>')
+    .replace(/`(.+?)`/g,'<code>$1</code>');
+  const lines = h.split('\n');
+  const out = [];
+  let inList = false;
+  for (const line of lines) {
+    if (line.startsWith('- ') || line.startsWith('• ')) {
+      if (!inList) { out.push('<ul>'); inList = true; }
+      out.push('<li>' + line.slice(2) + '</li>');
+    } else {
+      if (inList) { out.push('</ul>'); inList = false; }
+      if (line.trim()) out.push('<p>' + line + '</p>');
+    }
+  }
+  if (inList) out.push('</ul>');
+  return out.join('');
+}
+
+function showThinking() {
+  const ca = document.getElementById('chat-area');
+  const d = document.createElement('div');
+  d.id = 'thinking-indicator';
+  d.className = 'thinking';
+  d.innerHTML = '<div class="thinking-dot"></div><div class="thinking-dot"></div><div class="thinking-dot"></div>';
+  ca.appendChild(d);
+  ca.scrollTop = ca.scrollHeight;
+}
+function hideThinking() { const el = document.getElementById('thinking-indicator'); if (el) el.remove(); }
+
+async function sendMessage() {
+  if (isLoading) return;
+  if (!currentPlatform) { alert('Please select a platform.'); return; }
+  if (!activeSessionId) newSession();
+  const input = document.getElementById('user-input');
+  const text = input.value.trim();
+  if (!text) return;
+
+  const s = sessions[activeSessionId];
+  s.messages.push({ role: 'user', content: text });
+  input.value = '';
+  autoResize(input);
+  saveState();
+  appendMessageEl('user', text);
+  isLoading = true;
+  document.getElementById('send-btn').disabled = true;
+  showThinking();
+
+  const systemPrompt = `You are an expert automation guide specializing in ${currentPlatform}. Your role is to help the user build automations quickly and correctly — cutting through confusion so they spend minutes, not days, figuring things out.
+
+When the user describes a goal:
+1. Recommend the specific approach — which nodes, triggers, and connectors to use, in order
+2. Specify exactly which authentication method to use. Be opinionated. Recommend one, don't list options.
+3. Walk through setup steps clearly and concisely
+4. Flag common gotchas or version-specific issues proactively
+5. If something may have changed recently or is version-specific, search for current documentation
+
+Be direct and prescriptive. The user doesn't want to read documentation — they want you to have already read it for them. Use plain language, short paragraphs, and lists for steps. Never pad responses.
+
+Platform: ${currentPlatform}
+Session: ${s.title}`;
+
+  try {
+    const resp = await fetch(PROXY_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1024,
+        system: systemPrompt,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        messages: s.messages.map(m => ({ role: m.role, content: m.content }))
+      })
+    });
+    const data = await resp.json();
+    hideThinking();
+    let reply = '';
+    if (data.content) { for (const b of data.content) { if (b.type === 'text') reply += b.text; } }
+    if (!reply && data.error) reply = 'API error: ' + (data.error.message || 'Something went wrong.');
+    if (!reply) reply = 'No response received. Please try again.';
+    s.messages.push({ role: 'assistant', content: reply });
+    saveState();
+    appendMessageEl('assistant', reply);
+    document.getElementById('chat-area').scrollTop = document.getElementById('chat-area').scrollHeight;
+  } catch(e) {
+    hideThinking();
+    const err = 'Could not reach the local proxy. Make sure the backend is running: cd backend && npm start';
+    s.messages.push({ role: 'assistant', content: err });
+    saveState();
+    appendMessageEl('assistant', err);
+  }
+
+  isLoading = false;
+  document.getElementById('send-btn').disabled = false;
+}
+
+function handleKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }
+function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 128) + 'px'; }
+
+function exportSessions() {
+  const blob = new Blob([JSON.stringify({ sessions, exported: new Date().toISOString() }, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'autowolf-sessions-' + new Date().toISOString().slice(0, 10) + '.json';
+  a.click();
+}
+
+function importSessions(e) {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (data.sessions) { sessions = { ...sessions, ...data.sessions }; saveState(); renderSessionPills(); alert('Sessions imported.'); }
+      else alert('Invalid file format.');
+    } catch(err) { alert('Could not read file.'); }
+  };
+  reader.readAsText(file);
+}
+
+loadState();
+</script>
+</body>
+</html>
