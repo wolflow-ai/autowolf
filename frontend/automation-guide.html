@@ -22,14 +22,7 @@ body::after{
   background-image:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23g)' opacity='1'/%3E%3C/svg%3E"),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23g)' opacity='1'/%3E%3C/svg%3E");
-  background-size:300px 300px,200px 200px;
-  mix-blend-mode:multiply;opacity:0.22;
-}
-
-@keyframes land{
-  0%{opacity:0;transform:translateY(28px) skewY(0.4deg);}
-  60%{opacity:1;transform:translateY(-4px) skewY(-0.1deg);}
-  100%{opacity:1;transform:translateY(0) skewY(0);}
+  background-size:300px 300px,200px 200px;mix-blend-mode:multiply;opacity:0.22;
 }
 @keyframes msgIn{0%{opacity:0;transform:translateY(10px);}100%{opacity:1;transform:translateY(0);}}
 @keyframes pulse{0%,100%{opacity:0.3;}50%{opacity:1;}}
@@ -38,7 +31,24 @@ body::after{
 
 nav{display:flex;justify-content:space-between;align-items:baseline;padding:1.25rem 3.5rem 1rem;border-bottom:0.5px solid var(--stone-mid);position:relative;z-index:10;flex-shrink:0;}
 .nav-mark{font-family:var(--serif);font-weight:300;font-size:0.85rem;letter-spacing:0.06em;color:var(--ink-mid);font-style:italic;}
-.nav-right{font-family:var(--mono);font-size:0.55rem;letter-spacing:0.12em;color:var(--ink-dimmer);text-transform:uppercase;}
+.nav-right{display:flex;align-items:baseline;gap:1.5rem;}
+.nav-platform{font-family:var(--mono);font-size:0.55rem;letter-spacing:0.12em;color:var(--ink-dimmer);text-transform:uppercase;}
+.nav-key-toggle{font-family:var(--mono);font-size:0.5rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-faint);background:none;border:none;cursor:pointer;padding:0;transition:color 0.15s;}
+.nav-key-toggle:hover{color:var(--indigo-mid);}
+.nav-key-toggle.key-set{color:#3a6640;}
+
+.key-bar{max-height:0;opacity:0;overflow:hidden;transition:max-height 0.25s ease,opacity 0.2s ease;border-bottom:0.5px solid transparent;flex-shrink:0;position:relative;z-index:10;}
+.key-bar.open{max-height:60px;opacity:1;border-bottom-color:var(--stone-mid);}
+.key-bar-inner{display:flex;align-items:center;}
+.key-label{font-family:var(--mono);font-size:0.5rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--ink-faint);padding:0.55rem 1.5rem 0.55rem 3.5rem;border-right:0.5px solid var(--stone-mid);white-space:nowrap;}
+.key-input-wrap{flex:1;display:flex;align-items:center;padding:0 1.25rem;gap:1rem;}
+.key-input{font-family:var(--mono);font-size:0.52rem;letter-spacing:0.06em;color:var(--ink-mid);background:transparent;border:none;outline:none;flex:1;padding:0.45rem 0;min-width:0;}
+.key-input::placeholder{color:var(--ink-dimmer);}
+.key-status{font-family:var(--mono);font-size:0.45rem;letter-spacing:0.12em;text-transform:uppercase;white-space:nowrap;}
+.key-status.set{color:#3a6640;}
+.key-status.unset{color:var(--ink-dimmer);}
+.key-done{font-family:var(--mono);font-size:0.45rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--indigo-mid);background:none;border:0.5px solid var(--indigo-mid);padding:0.2rem 0.5rem;cursor:pointer;transition:all 0.15s;margin-right:1.25rem;flex-shrink:0;}
+.key-done:hover{background:var(--indigo);color:var(--stone-warm);border-color:var(--indigo);}
 
 .platform-bar{display:flex;align-items:center;border-bottom:0.5px solid var(--stone-mid);flex-shrink:0;position:relative;z-index:10;}
 .platform-label{font-family:var(--mono);font-size:0.5rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--ink-faint);padding:0.65rem 1.5rem 0.65rem 3.5rem;border-right:0.5px solid var(--stone-mid);white-space:nowrap;}
@@ -53,9 +63,14 @@ nav{display:flex;justify-content:space-between;align-items:baseline;padding:1.25
 .sessions-bar::-webkit-scrollbar-thumb{background:var(--stone-mid);}
 .sessions-label{font-family:var(--mono);font-size:0.48rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink-faint);white-space:nowrap;}
 #session-pills{display:flex;gap:0.5rem;flex-shrink:0;}
-.session-pill{font-family:var(--mono);font-size:0.48rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-mid);background:var(--stone-cool);border:0.5px solid var(--stone-mid);padding:0.2rem 0.6rem;cursor:pointer;transition:all 0.15s;white-space:nowrap;flex-shrink:0;}
-.session-pill:hover{color:var(--indigo);border-color:var(--indigo-mid);}
+.session-pill{display:inline-flex;align-items:center;gap:0.3rem;font-family:var(--mono);font-size:0.44rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-mid);background:var(--stone-cool);border:0.5px solid var(--stone-mid);padding:0.2rem 0.35rem 0.2rem 0.55rem;transition:all 0.15s;white-space:nowrap;flex-shrink:0;}
+.session-pill:hover{border-color:var(--indigo-mid);}
 .session-pill.active-session{color:var(--indigo);border-color:var(--indigo);}
+.pill-label{cursor:pointer;}
+.pill-label:hover{color:var(--indigo);}
+.pill-delete{font-size:0.7rem;line-height:1;color:var(--ink-dimmer);background:none;border:none;cursor:pointer;padding:0 0.1rem;transition:color 0.15s;}
+.pill-delete:hover{color:#8b2020;}
+
 .sessions-actions{display:flex;gap:0.5rem;margin-left:auto;flex-shrink:0;}
 .action-btn{font-family:var(--mono);font-size:0.45rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-faint);background:none;border:0.5px solid var(--stone-mid);padding:0.2rem 0.5rem;cursor:pointer;transition:all 0.15s;white-space:nowrap;}
 .action-btn:hover{color:var(--ink-mid);border-color:var(--ink-dimmer);}
@@ -63,7 +78,6 @@ nav{display:flex;justify-content:space-between;align-items:baseline;padding:1.25
 .chat-area{flex:1;overflow-y:auto;padding:2rem 3.5rem;display:flex;flex-direction:column;}
 .chat-area::-webkit-scrollbar{width:3px;}
 .chat-area::-webkit-scrollbar-thumb{background:var(--stone-mid);}
-
 .msg{margin-bottom:2rem;animation:msgIn 0.4s cubic-bezier(0.22,1.2,0.36,1) both;}
 .msg-meta{font-family:var(--mono);font-size:0.48rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-dimmer);margin-bottom:0.5rem;}
 .msg-meta.user-meta{text-align:right;color:var(--indigo-mid);}
@@ -105,8 +119,24 @@ textarea:focus{border-bottom-color:var(--indigo-mid);}
 
   <nav>
     <span class="nav-mark">Automation Guide</span>
-    <span class="nav-right" id="nav-platform">No platform selected</span>
+    <div class="nav-right">
+      <span class="nav-platform" id="nav-platform">No platform selected</span>
+      <button class="nav-key-toggle" id="nav-key-toggle" onclick="toggleKeyBar()">API Key ↓</button>
+    </div>
   </nav>
+
+  <div class="key-bar" id="key-bar">
+    <div class="key-bar-inner">
+      <span class="key-label">API Key</span>
+      <div class="key-input-wrap">
+        <input class="key-input" id="key-input" type="password"
+          placeholder="sk-ant-api03-…  (session memory only, never stored)"
+          autocomplete="off" oninput="onKeyInput()"/>
+        <span class="key-status unset" id="key-status">Not set</span>
+      </div>
+      <button class="key-done" onclick="toggleKeyBar()">Done ↑</button>
+    </div>
+  </div>
 
   <div class="platform-bar">
     <span class="platform-label">Platform</span>
@@ -122,10 +152,10 @@ textarea:focus{border-bottom-color:var(--indigo-mid);}
     <div id="session-pills"></div>
     <div class="sessions-actions">
       <button class="action-btn" onclick="newSession()">+ New</button>
-      <button class="action-btn" onclick="exportSessions()">Export</button>
+      <button class="action-btn" onclick="exportConversation()">Export TXT</button>
+      <button class="action-btn" onclick="exportSessionJSON()">Export JSON</button>
       <label class="action-btn" style="cursor:pointer;">
-        Import
-        <input type="file" accept=".json" style="display:none;" onchange="importSessions(event)"/>
+        Import<input type="file" accept=".json" style="display:none;" onchange="importSessions(event)"/>
       </label>
     </div>
   </div>
@@ -145,18 +175,22 @@ textarea:focus{border-bottom-color:var(--indigo-mid);}
 
 </div>
 <script>
-const PROXY_URL = 'http://localhost:3001/api/chat';
+const PROXY_URL   = 'http://localhost:3001/api/chat';
 const STORAGE_KEY = 'ag_sessions_v1';
 const ACTIVE_KEY  = 'ag_active_v1';
 const PLAT_KEY    = 'ag_platform_v1';
 
-let sessions = {};
-let activeSessionId = null;
-let currentPlatform = null;
-let isLoading = false;
+let sessions = {}, activeSessionId = null, currentPlatform = null;
+let apiKey = '', isLoading = false, keyBarOpen = false;
 
-function genId() {
-  return 'sess_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+function genId() { return 'sess_' + Date.now() + '_' + Math.random().toString(36).slice(2,6); }
+
+function sessionTitle(platform) {
+  const now = new Date(), pad = n => String(n).padStart(2,'0');
+  const date = `${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}`;
+  const time = `${pad(now.getHours())}${pad(now.getMinutes())}`;
+  const short = platform === 'Power Automate' ? 'PA' : platform === 'Copilot Studio' ? 'CS' : platform;
+  return `${short} · ${date}_${time}`;
 }
 
 function loadState() {
@@ -172,6 +206,29 @@ function saveState() {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions)); } catch(e) {}
   try { localStorage.setItem(ACTIVE_KEY, activeSessionId || ''); } catch(e) {}
   try { localStorage.setItem(PLAT_KEY, currentPlatform || ''); } catch(e) {}
+}
+
+function toggleKeyBar() {
+  keyBarOpen = !keyBarOpen;
+  document.getElementById('key-bar').classList.toggle('open', keyBarOpen);
+  const t = document.getElementById('nav-key-toggle');
+  if (keyBarOpen) { t.textContent = 'API Key ↑'; document.getElementById('key-input').focus(); }
+  else { t.textContent = apiKey.startsWith('sk-ant') ? 'API Key ✓' : 'API Key ↓'; }
+}
+
+function onKeyInput() {
+  apiKey = document.getElementById('key-input').value.trim();
+  const status = document.getElementById('key-status');
+  const toggle = document.getElementById('nav-key-toggle');
+  if (apiKey.startsWith('sk-ant')) {
+    status.textContent = 'Ready'; status.className = 'key-status set';
+    toggle.classList.add('key-set');
+  } else {
+    status.textContent = apiKey.length ? 'Check format' : 'Not set';
+    status.className = 'key-status unset';
+    toggle.classList.remove('key-set');
+  }
+  updateHint();
 }
 
 function selectPlatform(p, save = true) {
@@ -192,25 +249,38 @@ function updateHint() {
 function newSession() {
   if (!currentPlatform) { alert('Select a platform first.'); return; }
   const id = genId();
-  const num = Object.keys(sessions).length + 1;
-  sessions[id] = { id, title: 'Session ' + num, platform: currentPlatform, messages: [], created: Date.now() };
+  sessions[id] = { id, title: sessionTitle(currentPlatform), platform: currentPlatform, messages: [], created: Date.now() };
   activeSessionId = id;
-  saveState();
-  renderSessionPills();
-  renderSession(id);
+  saveState(); renderSessionPills(); renderSession(id); updateHint();
+}
+
+function deleteSession(id, e) {
+  e.stopPropagation();
+  if (!confirm(`Delete session "${sessions[id].title}"?`)) return;
+  delete sessions[id];
+  if (activeSessionId === id) {
+    const remaining = Object.keys(sessions);
+    activeSessionId = remaining.length ? remaining[remaining.length - 1] : null;
+  }
+  saveState(); renderSessionPills();
+  if (activeSessionId && sessions[activeSessionId]) renderSession(activeSessionId);
+  else renderEmpty();
   updateHint();
 }
 
 function renderSessionPills() {
   const container = document.getElementById('session-pills');
-  const ids = Object.keys(sessions).sort((a, b) => (sessions[a].created || 0) - (sessions[b].created || 0));
+  const ids = Object.keys(sessions).sort((a,b) => (sessions[a].created||0) - (sessions[b].created||0));
   if (!ids.length) {
     container.innerHTML = '<span style="font-family:var(--mono);font-size:0.45rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-dimmer);">No sessions yet</span>';
     return;
   }
   container.innerHTML = ids.map(id => {
     const s = sessions[id];
-    return `<button class="session-pill${id === activeSessionId ? ' active-session' : ''}" onclick="switchSession('${id}')" title="${s.platform}">${s.title}</button>`;
+    return `<span class="session-pill${id===activeSessionId?' active-session':''}">
+      <span class="pill-label" onclick="switchSession('${id}')">${s.title}</span>
+      <button class="pill-delete" onclick="deleteSession('${id}',event)" title="Delete">×</button>
+    </span>`;
   }).join('');
 }
 
@@ -218,15 +288,11 @@ function switchSession(id) {
   activeSessionId = id;
   const s = sessions[id];
   if (s.platform && s.platform !== currentPlatform) selectPlatform(s.platform, false);
-  saveState();
-  renderSessionPills();
-  renderSession(id);
-  updateHint();
+  saveState(); renderSessionPills(); renderSession(id); updateHint();
 }
 
 function renderSession(id) {
-  const s = sessions[id];
-  const ca = document.getElementById('chat-area');
+  const s = sessions[id], ca = document.getElementById('chat-area');
   if (!s || !s.messages.length) {
     ca.innerHTML = `<div class="empty-state">
       <div class="empty-kicker">${s ? s.platform : 'Automation Guide'}</div>
@@ -244,7 +310,7 @@ function renderEmpty() {
   document.getElementById('chat-area').innerHTML = `<div class="empty-state">
     <div class="empty-kicker">Automation Guide · Wolflow Suite</div>
     <div class="empty-head">Stop <em>figuring it out.</em><br>Start building.</div>
-    <div class="empty-sub">Select a platform, start a session, and describe what you want to automate. The proxy handles your API key — never touches the browser.</div>
+    <div class="empty-sub">Select a platform, start a session, and describe what you want to automate.</div>
   </div>`;
 }
 
@@ -266,14 +332,11 @@ function appendMessageEl(role, content) {
 }
 
 function formatContent(t) {
-  let h = t
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+  let h = t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
     .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
     .replace(/\*(.+?)\*/g,'<em>$1</em>')
     .replace(/`(.+?)`/g,'<code>$1</code>');
-  const lines = h.split('\n');
-  const out = [];
-  let inList = false;
+  const lines = h.split('\n'), out = []; let inList = false;
   for (const line of lines) {
     if (line.startsWith('- ') || line.startsWith('• ')) {
       if (!inList) { out.push('<ul>'); inList = true; }
@@ -290,11 +353,9 @@ function formatContent(t) {
 function showThinking() {
   const ca = document.getElementById('chat-area');
   const d = document.createElement('div');
-  d.id = 'thinking-indicator';
-  d.className = 'thinking';
+  d.id = 'thinking-indicator'; d.className = 'thinking';
   d.innerHTML = '<div class="thinking-dot"></div><div class="thinking-dot"></div><div class="thinking-dot"></div>';
-  ca.appendChild(d);
-  ca.scrollTop = ca.scrollHeight;
+  ca.appendChild(d); ca.scrollTop = ca.scrollHeight;
 }
 function hideThinking() { const el = document.getElementById('thinking-indicator'); if (el) el.remove(); }
 
@@ -308,32 +369,36 @@ async function sendMessage() {
 
   const s = sessions[activeSessionId];
   s.messages.push({ role: 'user', content: text });
-  input.value = '';
-  autoResize(input);
-  saveState();
+  input.value = ''; autoResize(input); saveState();
   appendMessageEl('user', text);
   isLoading = true;
   document.getElementById('send-btn').disabled = true;
   showThinking();
 
-  const systemPrompt = `You are an expert automation guide specializing in ${currentPlatform}. Your role is to help the user build automations quickly and correctly — cutting through confusion so they spend minutes, not days, figuring things out.
+  const systemPrompt = `You are an expert automation guide specializing in ${currentPlatform}. Help the user build automations quickly and correctly.
 
 When the user describes a goal:
 1. Recommend the specific approach — which nodes, triggers, and connectors to use, in order
 2. Specify exactly which authentication method to use. Be opinionated. Recommend one, don't list options.
 3. Walk through setup steps clearly and concisely
 4. Flag common gotchas or version-specific issues proactively
-5. If something may have changed recently or is version-specific, search for current documentation
+5. If something may have changed recently, search for current documentation
 
-Be direct and prescriptive. The user doesn't want to read documentation — they want you to have already read it for them. Use plain language, short paragraphs, and lists for steps. Never pad responses.
+Be direct and prescriptive. Plain language, short paragraphs, lists for steps. Never pad responses.
 
 Platform: ${currentPlatform}
 Session: ${s.title}`;
 
+  const headers = { 'Content-Type': 'application/json' };
+  if (apiKey.startsWith('sk-ant')) {
+    headers['x-api-key'] = apiKey;
+    headers['anthropic-version'] = '2023-06-01';
+    headers['anthropic-dangerous-direct-browser-calls'] = 'true';
+  }
+
   try {
     const resp = await fetch(PROXY_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'POST', headers,
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 1024,
@@ -349,17 +414,14 @@ Session: ${s.title}`;
     if (!reply && data.error) reply = 'API error: ' + (data.error.message || 'Something went wrong.');
     if (!reply) reply = 'No response received. Please try again.';
     s.messages.push({ role: 'assistant', content: reply });
-    saveState();
-    appendMessageEl('assistant', reply);
+    saveState(); appendMessageEl('assistant', reply);
     document.getElementById('chat-area').scrollTop = document.getElementById('chat-area').scrollHeight;
   } catch(e) {
     hideThinking();
-    const err = 'Could not reach the local proxy. Make sure the backend is running: cd backend && npm start';
+    const err = 'Could not reach the local proxy. Make sure the backend is running:\n\ncd autowolf\\backend\nnpm start';
     s.messages.push({ role: 'assistant', content: err });
-    saveState();
-    appendMessageEl('assistant', err);
+    saveState(); appendMessageEl('assistant', err);
   }
-
   isLoading = false;
   document.getElementById('send-btn').disabled = false;
 }
@@ -367,11 +429,35 @@ Session: ${s.title}`;
 function handleKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }
 function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 128) + 'px'; }
 
-function exportSessions() {
+function exportConversation() {
+  if (!activeSessionId || !sessions[activeSessionId]) { alert('No active session.'); return; }
+  const s = sessions[activeSessionId];
+  if (!s.messages.length) { alert('This session has no messages yet.'); return; }
+  const lines = [
+    'Autowolf · Automation Guide',
+    `Session: ${s.title}`,
+    `Platform: ${s.platform}`,
+    `Exported: ${new Date().toISOString()}`,
+    '─'.repeat(60), ''
+  ];
+  s.messages.forEach(m => {
+    const label = m.role === 'user' ? 'YOU' : s.platform.toUpperCase() + ' GUIDE';
+    lines.push(`[${label}]`);
+    lines.push(m.content.replace(/\*\*(.+?)\*\*/g,'$1').replace(/\*(.+?)\*/g,'$1').replace(/`(.+?)`/g,'$1'));
+    lines.push('');
+  });
+  const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'autowolf-' + s.title.replace(/[^a-z0-9]/gi,'-').toLowerCase() + '.txt';
+  a.click();
+}
+
+function exportSessionJSON() {
   const blob = new Blob([JSON.stringify({ sessions, exported: new Date().toISOString() }, null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'autowolf-sessions-' + new Date().toISOString().slice(0, 10) + '.json';
+  a.download = 'autowolf-sessions-' + new Date().toISOString().slice(0,10) + '.json';
   a.click();
 }
 
