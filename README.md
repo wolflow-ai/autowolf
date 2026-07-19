@@ -6,6 +6,8 @@ An AI-powered guide for building automations in n8n, Power Automate, and Copilot
 
 Built with the Anthropic Claude API and web search, so guidance is current rather than cached.
 
+**Hosted version:** [wolflow.ai/autowolf](https://wolflow.ai/autowolf/) — free, no install, bring your own Anthropic API key (it stays in your browser's memory, never stored). This repo is the run-it-locally version, which keeps your key server-side behind a small proxy instead.
+
 ---
 
 ## What it does
@@ -106,7 +108,7 @@ Sessions are stored in your browser's localStorage and survive page refreshes. E
 | Wolflow | app.wolflow.ai | AI problem qualifier — should you start? |
 | Wolfpath | path.wolflow.ai | Automation path mapper — how to start |
 | Wolfbridge | bridge.wolflow.ai | Enterprise platform intelligence |
-| Autowolf | local / this repo | Step-by-step automation guide |
+| Autowolf | wolflow.ai/autowolf | Step-by-step automation guide (hosted · BYO key · local via this repo) |
 
 ---
 
