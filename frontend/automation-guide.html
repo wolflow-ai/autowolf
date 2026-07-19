@@ -3,18 +3,19 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Automation Guide · Wolflow Suite</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Martian+Mono:wght@300;400&display=swap" rel="stylesheet"/>
+<title>Autowolf — Automation Guide · Wolflow Suite</title>
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+/* Studio Editorial — wolflow-theme.css (wolflow-home repo) is the source of
+   truth. One paper, one ink, one orange. System type stack — no fonts CDN.
+   Legacy var names kept (--indigo now carries the accent, --stone-* the
+   paper/hairline scale) so the layout rules below stay untouched. */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;border-radius:0!important;}
 :root{
-  --ink:#181b14;--ink-mid:#3c3325;--ink-faint:#697060;--ink-dimmer:#a8a090;
-  --stone-warm:#edeade;--stone-mid:#d0ccc0;--stone-cool:#e8e6e0;
-  --indigo:#3a4a7c;--indigo-mid:#5a6fa0;
-  --serif:'Cormorant Garamond',Georgia,serif;
-  --mono:'Martian Mono','Courier New',monospace;
+  --ink:#141414;--ink-mid:#333331;--ink-faint:#6b6b66;--ink-dimmer:#9a9a94;
+  --stone-warm:#fafaf8;--stone-mid:#e4e4de;--stone-cool:#ecece6;
+  --indigo:#ff4f00;--indigo-mid:#d64300;
+  --serif:"Segoe UI Variable Display","Segoe UI",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;
+  --mono:"Cascadia Mono","SF Mono",Menlo,Consolas,monospace;
 }
 html,body{height:100%;font-family:var(--serif);background:var(--stone-warm);color:var(--ink);-webkit-font-smoothing:antialiased;overflow-x:hidden;}
 body::after{
@@ -22,7 +23,7 @@ body::after{
   background-image:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23g)' opacity='1'/%3E%3C/svg%3E"),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23g)' opacity='1'/%3E%3C/svg%3E");
-  background-size:300px 300px,200px 200px;mix-blend-mode:multiply;opacity:0.22;
+  background-size:300px 300px,200px 200px;mix-blend-mode:multiply;opacity:0.05;
 }
 @keyframes msgIn{0%{opacity:0;transform:translateY(10px);}100%{opacity:1;transform:translateY(0);}}
 @keyframes pulse{0%,100%{opacity:0.3;}50%{opacity:1;}}
@@ -30,12 +31,14 @@ body::after{
 .app{display:flex;flex-direction:column;height:100vh;max-width:900px;margin:0 auto;}
 
 nav{display:flex;justify-content:space-between;align-items:baseline;padding:1.25rem 3.5rem 1rem;border-bottom:0.5px solid var(--stone-mid);position:relative;z-index:10;flex-shrink:0;}
-.nav-mark{font-family:var(--serif);font-weight:300;font-size:0.85rem;letter-spacing:0.06em;color:var(--ink-mid);font-style:italic;}
+.nav-mark{font-family:var(--serif);font-weight:800;font-size:0.85rem;letter-spacing:-0.01em;color:var(--ink);}
+.nav-mark .mark-glyph{color:var(--indigo);margin-right:0.4rem;}
+.nav-suite{font-family:var(--mono);font-size:0.55rem;letter-spacing:0.12em;color:var(--indigo);text-transform:uppercase;text-decoration:none;}
 .nav-right{display:flex;align-items:baseline;gap:1.5rem;}
 .nav-platform{font-family:var(--mono);font-size:0.55rem;letter-spacing:0.12em;color:var(--ink-dimmer);text-transform:uppercase;}
 .nav-key-toggle{font-family:var(--mono);font-size:0.5rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-faint);background:none;border:none;cursor:pointer;padding:0;transition:color 0.15s;}
 .nav-key-toggle:hover{color:var(--indigo-mid);}
-.nav-key-toggle.key-set{color:#3a6640;}
+.nav-key-toggle.key-set{color:#1d7a4f;}
 
 .key-bar{max-height:0;opacity:0;overflow:hidden;transition:max-height 0.25s ease,opacity 0.2s ease;border-bottom:0.5px solid transparent;flex-shrink:0;position:relative;z-index:10;}
 .key-bar.open{max-height:60px;opacity:1;border-bottom-color:var(--stone-mid);}
@@ -45,7 +48,7 @@ nav{display:flex;justify-content:space-between;align-items:baseline;padding:1.25
 .key-input{font-family:var(--mono);font-size:0.52rem;letter-spacing:0.06em;color:var(--ink-mid);background:transparent;border:none;outline:none;flex:1;padding:0.45rem 0;min-width:0;}
 .key-input::placeholder{color:var(--ink-dimmer);}
 .key-status{font-family:var(--mono);font-size:0.45rem;letter-spacing:0.12em;text-transform:uppercase;white-space:nowrap;}
-.key-status.set{color:#3a6640;}
+.key-status.set{color:#1d7a4f;}
 .key-status.unset{color:var(--ink-dimmer);}
 .key-done{font-family:var(--mono);font-size:0.45rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--indigo-mid);background:none;border:0.5px solid var(--indigo-mid);padding:0.2rem 0.5rem;cursor:pointer;transition:all 0.15s;margin-right:1.25rem;flex-shrink:0;}
 .key-done:hover{background:var(--indigo);color:var(--stone-warm);border-color:var(--indigo);}
@@ -69,7 +72,7 @@ nav{display:flex;justify-content:space-between;align-items:baseline;padding:1.25
 .pill-label{cursor:pointer;}
 .pill-label:hover{color:var(--indigo);}
 .pill-delete{font-size:0.7rem;line-height:1;color:var(--ink-dimmer);background:none;border:none;cursor:pointer;padding:0 0.1rem;transition:color 0.15s;}
-.pill-delete:hover{color:#8b2020;}
+.pill-delete:hover{color:#d03b3b;}
 
 .sessions-actions{display:flex;gap:0.5rem;margin-left:auto;flex-shrink:0;}
 .action-btn{font-family:var(--mono);font-size:0.45rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-faint);background:none;border:0.5px solid var(--stone-mid);padding:0.2rem 0.5rem;cursor:pointer;transition:all 0.15s;white-space:nowrap;}
@@ -109,7 +112,7 @@ textarea:focus{border-bottom-color:var(--indigo-mid);}
 
 .empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:3rem;text-align:center;}
 .empty-kicker{font-family:var(--mono);font-size:0.52rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--indigo-mid);margin-bottom:1.5rem;}
-.empty-head{font-family:var(--serif);font-weight:300;font-size:2rem;line-height:1.15;color:var(--ink);margin-bottom:1rem;letter-spacing:-0.01em;}
+.empty-head{font-family:var(--serif);font-weight:800;font-size:2rem;line-height:1.1;color:var(--ink);margin-bottom:1rem;letter-spacing:-0.02em;}
 .empty-head em{font-style:italic;color:var(--indigo);}
 .empty-sub{font-family:var(--serif);font-weight:300;font-size:0.95rem;line-height:1.7;color:var(--ink-faint);max-width:38ch;}
 </style>
@@ -118,8 +121,9 @@ textarea:focus{border-bottom-color:var(--indigo-mid);}
 <div class="app">
 
   <nav>
-    <span class="nav-mark">Automation Guide</span>
+    <span class="nav-mark"><span class="mark-glyph">◈</span>Autowolf</span>
     <div class="nav-right">
+      <a class="nav-suite" href="https://wolflow.ai">wolflow.ai</a>
       <span class="nav-platform" id="nav-platform">No platform selected</span>
       <button class="nav-key-toggle" id="nav-key-toggle" onclick="toggleKeyBar()">API Key ↓</button>
     </div>
@@ -514,6 +518,55 @@ function importSessions(e) {
 }
 
 loadState();
+</script>
+<script>
+/* Wolflow Brief v1 — accept handoffs from the suite. Parse logic mirrors
+   wolflowBrief.js in the wolflow repo (the source of truth). */
+(function () {
+  var RE = /<!--wolflow-brief:([A-Za-z0-9+\/=]+)-->/;
+  function dec(b) { try { return decodeURIComponent(escape(atob(b))); } catch (e) { return ""; } }
+  function norm(r) {
+    return (r && r.kind === "wolflow-brief" && typeof r.today === "string" && r.today.trim()) ? r : null;
+  }
+  function parse(t) {
+    var m = String(t || "").match(RE);
+    if (!m) return null;
+    try { return norm(JSON.parse(dec(m[1]))); } catch (e) { return null; }
+  }
+  function toText(b) {
+    var p = [b.today.trim()];
+    if (b.numbers && b.numbers.trim()) p.push("In numbers: " + b.numbers.trim());
+    if (b.better && b.better.trim())  p.push("What better looks like: " + b.better.trim());
+    if (b.tried && b.tried.trim())    p.push("Already tried / constraints: " + b.tried.trim());
+    return p.join("\n\n");
+  }
+  function apply(b) {
+    var ta = document.getElementById("user-input");
+    if (!ta) return;
+    ta.value = toText(b);
+    if (typeof autoResize === "function") autoResize(ta);
+    var hint = document.getElementById("input-hint");
+    if (hint) hint.textContent = "Wolflow Brief received — pick a platform, start a session, and send";
+  }
+  function checkHash() {
+    var m = window.location.hash.match(/#brief=([A-Za-z0-9+\/=]+)/);
+    if (m) { try { var b = norm(JSON.parse(dec(m[1]))); if (b) apply(b); } catch (e) {} }
+  }
+  function init() {
+    var ta = document.getElementById("user-input");
+    if (ta) {
+      ta.addEventListener("paste", function (e) {
+        var t = (e.clipboardData || window.clipboardData).getData("text");
+        var b = parse(t);
+        if (b) { e.preventDefault(); apply(b); }
+      });
+    }
+    checkHash();
+    window.addEventListener("hashchange", checkHash);
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
 </script>
 </body>
 </html>
